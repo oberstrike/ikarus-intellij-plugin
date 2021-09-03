@@ -1,0 +1,48 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'org.jetbrains.intellij' version '1.1.4'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    testImplementation('org.assertj:assertj-core:3.20.2')
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
+    testImplementation(platform('org.junit:junit-bom:5.7.2'))
+    // https://mvnrepository.com/artifact/com.squareup/javapoet
+    implementation 'com.squareup:javapoet:1.13.0'
+
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version = '2021.2'
+    plugins = ['com.intellij.javafx:1.0.1', 'com.intellij.java']
+}
+patchPluginXml {
+    changeNotes = """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
+
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+}

@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>org.example.ikarus-intellij-plugin</id>
+    <name>Ikarus</name>
+    <vendor email="markus.juergens@gmx.de" url="">Markus</vendor>
+
+    <description><![CDATA[
+        A multiple functional plugin for java and kotlin.
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.javafx</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+
+        <group id="org.intellij.sdk.action.GroupedActions" text="Static Grouped Actions" popup="true">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+        </group>
+
+        <group id="org.intellij.sdk.action.GroupedActions2" text="Test" popup="true">
+            <add-to-group group-id="org.intellij.sdk.action.GroupedActions" anchor="last"/>
+            <action class="de.ma.domain.verify.GenerateVerifyExpressionAction" id="Ikarus.Actions.GenerateAction"
+                    text="Generate Custom Tests..">
+                <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
+            </action>
+        </group>
+
+    </actions>
+</idea-plugin>
