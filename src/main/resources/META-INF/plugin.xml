@@ -19,14 +19,14 @@
 
     <actions>
 
-        <group id="org.intellij.sdk.action.GroupedActions" text="Static Grouped Actions" popup="true">
+        <group id="org.intellij.sdk.action.GroupedActions" text="Extensions" popup="true">
             <add-to-group group-id="MainMenu" anchor="last"/>
         </group>
 
-        <group id="org.intellij.sdk.action.GroupedActions2" text="Test" popup="true">
+        <group id="org.intellij.sdk.action.GroupedActions2" text="Mockito Extensions" popup="true">
             <add-to-group group-id="org.intellij.sdk.action.GroupedActions" anchor="last"/>
-            <action class="de.ma.domain.verify.GenerateVerifyExpressionAction" id="Ikarus.Actions.GenerateAction"
-                    text="Generate Custom Tests..">
+            <action class="de.ma.domain.verify.VerifyGenerateAction" id="Ikarus.Actions.GenerateAction"
+                    text="Generate Verify Expressions">
                 <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
             </action>
         </group>
