@@ -1,6 +1,7 @@
 package de.ma.util
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethodCallExpression
 
 fun PsiElement.findChildBy(block: (PsiElement) -> Boolean): List<PsiElement> {
     val result = mutableListOf<PsiElement>()
@@ -17,13 +18,15 @@ fun PsiElement.findChildBy(block: (PsiElement) -> Boolean): List<PsiElement> {
     return result
 }
 
-fun defaultFun(param: PsiElement) = true
-
 inline fun <reified T : PsiElement> PsiElement.findChildByClass(
     klass: Class<T>,
-    block: (T) -> Boolean = ::defaultFun
+    block: (T) -> Boolean = { _ ->  true}
 ): List<T> {
     return findChildBy { it::class.java == klass }
         .filterIsInstance<T>()
         .filter(block)
 }
+
+fun PsiMethodCallExpression.hasArgumentExpressions() = argumentList.expressions.isNotEmpty()
+
+fun PsiElement.textContains(textToFind: String) = text.contains(textToFind)
