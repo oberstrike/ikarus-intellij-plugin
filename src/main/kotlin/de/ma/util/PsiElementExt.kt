@@ -3,7 +3,7 @@ package de.ma.util
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethodCallExpression
 
-fun PsiElement.findChildBy(block: (PsiElement) -> Boolean): List<PsiElement> {
+fun PsiElement.findChildBy(block: (PsiElement) -> Boolean = { _ -> true}): List<PsiElement> {
     val result = mutableListOf<PsiElement>()
 
     for (child in children) {
@@ -19,10 +19,9 @@ fun PsiElement.findChildBy(block: (PsiElement) -> Boolean): List<PsiElement> {
 }
 
 inline fun <reified T : PsiElement> PsiElement.findChildByClass(
-    klass: Class<T>,
     block: (T) -> Boolean = { _ ->  true}
 ): List<T> {
-    return findChildBy { it::class.java == klass }
+    return findChildBy()
         .filterIsInstance<T>()
         .filter(block)
 }

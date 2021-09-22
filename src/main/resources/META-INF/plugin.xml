@@ -10,7 +10,6 @@
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.javafx</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -29,6 +28,10 @@
                     text="Generate Verify Expressions">
                 <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
             </action>
+            <action class="de.ma.actions.OpenSelectionDialogAction" id="Ikarus.Actions.SelectionDialogAction"
+                text="Select">
+            </action>
+
         </group>
 
     </actions>

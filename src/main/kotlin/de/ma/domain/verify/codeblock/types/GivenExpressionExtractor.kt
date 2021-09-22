@@ -1,18 +1,17 @@
-package de.ma.domain.verify.extractor.types
+package de.ma.domain.verify.codeblock.types
 
 import com.intellij.psi.PsiCodeBlock
 import com.intellij.psi.PsiMethodCallExpression
-import com.intellij.psi.impl.source.tree.java.PsiMethodCallExpressionImpl
 import de.ma.domain.verify.VerifyExpression
-import de.ma.domain.verify.extractor.IExtractor
+import de.ma.domain.verify.codeblock.IExtractor
 import de.ma.util.containsAny
 import de.ma.util.findChildByClass
 import de.ma.util.hasArgumentExpressions
 import de.ma.util.textContains
 
-class GivenExpressionExtractor : IExtractor {
-
-    override val type: ExtractorType = ExtractorType.GIVEN
+class GivenExpressionExtractor(
+    private val psiCodeBlock: PsiCodeBlock
+) : IExtractor<VerifyExpression> {
 
     companion object {
 
@@ -29,8 +28,8 @@ class GivenExpressionExtractor : IExtractor {
         2. get the first argument expression (x.toString())
         3. use this expression to create a VerifyExpression
      */
-    override fun extract(psiCodeBlock: PsiCodeBlock): List<VerifyExpression> {
-        return psiCodeBlock.findChildByClass(PsiMethodCallExpressionImpl::class.java) { methodCallExpression ->
+    override fun extract(): List<VerifyExpression> {
+        return psiCodeBlock.findChildByClass<PsiMethodCallExpression>() { methodCallExpression ->
             methodCallExpression.textContains(givenStatement)
                     && !methodCallExpression.text.containsAny(givenReturnStatements)
                     && methodCallExpression.hasArgumentExpressions()

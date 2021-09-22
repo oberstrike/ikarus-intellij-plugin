@@ -2,8 +2,10 @@ package de.ma.util
 
 
 fun String.containsAny(listOfElements: List<String>): Boolean {
-    if (listOfElements.contains(this)) {
-        return true
+    for(element in listOfElements){
+        if(this.contains(element)){
+            return true
+        }
     }
     return false
 }

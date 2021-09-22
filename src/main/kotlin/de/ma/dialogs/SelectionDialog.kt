@@ -1,92 +1,48 @@
 package de.ma.dialogs
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import de.ma.util.*
-import javafx.application.Platform
-import javafx.embed.swing.JFXPanel
-import javafx.scene.Scene
-import javafx.scene.control.Alert
-import javafx.scene.layout.GridPane
-import java.awt.BorderLayout
-import java.awt.Dimension
 import javax.swing.JComponent
-import javax.swing.JPanel
-
 
 class SelectionDialog(
     project: Project,
-    private val model: SelectionModel
 ) : DialogWrapper(project) {
 
-    private val width = 300.0
-
-    private val height = 200.0
-
-    private val controller: SelectionController
-
     init {
-        title = "Test DialogWrapper"
-        controller = SelectionController()
+        title = "Demo"
         init()
+        isResizable = false
     }
+
 
     override fun createCenterPanel(): JComponent {
-        val dialogPanel = JPanel(BorderLayout())
-
-        val fxPanel = JFXPanel()
-        fxPanel.preferredSize = Dimension(width.toInt(), height.toInt())
-
-        Platform.setImplicitExit(false)
-
-        Platform.runLater {
-            initFX(fxPanel)
-        }
-
-        dialogPanel.add(fxPanel, BorderLayout.CENTER)
-        return dialogPanel
-    }
+        return ComposePanel().apply {
+            setBounds(0, 0, 400, 300)
+            setContent {
+                MaterialTheme {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        Row {
+                            Column {
+                                Text("Hallo aus Compose!!")
+                            }
+                        }
 
 
-    private fun initFX(fxPanel: JFXPanel): Scene {
-        val root = aGroup {
-            addChild(
-                aGridPane {
-                    this + aGridNode(aLabel("Auswahl des Frameworks") { font(11.0) }, 1, 0)
-                    this + aGridNode(aLabel("Framework") { font(9.0) }, 1, 1)
-                    this + aGridNode(aChoiceBox<Framework> {
-                        items.addAll(controller.frameworkValues)
-                        layoutX = 10.0
-                        layoutY = 10.0
-                        valueProperty().bindBidirectional(model.frameworkProperty())
-                    }, 2, 1)
+                    }
+
                 }
+            }
 
-            )
         }
-
-        val scene = Scene(root, width, height)
-        fxPanel.scene = scene
-
-        return scene
     }
-
-
-    override fun doOKAction() {
-        val alertContent = model.framework.name
-
-        Platform.runLater {
-            val alert = Alert(Alert.AlertType.INFORMATION)
-            alert.title = "Framework"
-            alert.contentText = alertContent
-            alert.showAndWait()
-        }
-
-
-
-        super.doOKAction()
-    }
-
 }
 
 

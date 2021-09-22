@@ -6,8 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
-import de.ma.domain.verify.extractor.*
-import de.ma.domain.verify.extractor.types.ExtractorType
+import de.ma.domain.verify.codeblock.*
 import de.ma.util.*
 import kotlin.jvm.Throws
 
@@ -24,40 +23,43 @@ class VerifyGenerateAction : AnAction() {
         private val logger: Logger = Logger.getInstance(VerifyGenerateAction::class.java)
     }
 
-    @Throws(ReadingException::class)
+    @Throws(VerifyGenerationException::class)
     private fun perform(event: AnActionEvent) {
         val dataContext = event.dataContext
 
-        val project = event.project ?: throw ReadingException(noProjectWasFoundMessage)
-        val factory = JavaPsiFacade.getInstance(project).elementFactory
-        val psiFile = dataContext.getData(CommonDataKeys.PSI_FILE) ?: throw ReadingException(noJavaFileSelectedMessage)
+        val selectedProject = event.project ?: throw VerifyGenerationException(noProjectWasFoundMessage)
+        val elementFactory = JavaPsiFacade.getInstance(selectedProject).elementFactory
+        val selectedPsiFile = dataContext.getData(CommonDataKeys.PSI_FILE) ?: throw VerifyGenerationException(noJavaFileSelectedMessage)
         val caretModel = dataContext.getData(CommonDataKeys.EDITOR)?.caretModel
-        val offset = caretModel?.offset ?: throw ReadingException(noExpressionSelectedMessage)
+        val offset = caretModel?.offset ?: throw VerifyGenerationException(noExpressionSelectedMessage)
 
-        val elementAtOffset = psiFile.findElementAt(offset)
+        val elementAtOffset = selectedPsiFile.findElementAt(offset)
 
-        val codeBlock =
-            PsiTreeUtil.getParentOfType(elementAtOffset, PsiCodeBlock::class.java) ?: throw  ReadingException(
+        val methodCodeBlock =
+            PsiTreeUtil.getParentOfType(elementAtOffset, PsiCodeBlock::class.java) ?: throw  VerifyGenerationException(
                 noExpressionSelectedMessage
             )
+
 
         val expressionStatementToCopy =
-            codeBlock.children.filterIsInstance<PsiExpressionStatement>().firstOrNull() ?: throw ReadingException(
+            methodCodeBlock.children.filterIsInstance<PsiExpressionStatement>().firstOrNull() ?: throw VerifyGenerationException(
                 noExpressionSelectedMessage
             )
 
-        val verifyPsiElementCreator = VerifyPsiElementCreator(factory, expressionStatementToCopy)
+        val verifyPsiElementCreator = VerifyPsiElementCreator(elementFactory, expressionStatementToCopy)
 
-        val psiFileWriter = PsiFileWriter(psiFile)
+        val psiFileWriter = PsiFileWriter(selectedPsiFile)
 
-        val allGivenExpressions = ExtractorStrategy.extract(ExtractorType.GIVEN, codeBlock)
+        val extractor = CodeBlockExtractor(methodCodeBlock)
 
-        val allExistingVerifyExpressions = ExtractorStrategy.extract(ExtractorType.VERIFY, codeBlock)
+        val allGivenExpressions = extractor.extractGivenExpressions()
+
+        val allExistingVerifyExpressions = extractor.extractVerifyExpressions()
 
         for (givenExpression in allGivenExpressions) {
             if (!allExistingVerifyExpressions.contains(givenExpression)) {
                 val verifyPsiElement = verifyPsiElementCreator.create(givenExpression)
-                psiFileWriter.addElementToBase(codeBlock, verifyPsiElement)
+                psiFileWriter.addElementToBase(methodCodeBlock, verifyPsiElement)
             }
         }
     }
@@ -66,12 +68,10 @@ class VerifyGenerateAction : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         try {
             perform(event)
-        } catch (exception: ReadingException) {
+        } catch (exception: VerifyGenerationException) {
             logger.error(exception.message)
         }
     }
-
-    class ReadingException(message: String) : RuntimeException(message)
 
 
     override fun update(anActionEvent: AnActionEvent) {
