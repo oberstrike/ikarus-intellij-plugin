@@ -1,6 +1,4 @@
 plugins {
-
-
     id("org.jetbrains.intellij") version "1.1.4"
     java
     kotlin("jvm") version "1.5.21"
@@ -20,13 +18,13 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.assertj:assertj-core:3.20.2")
+    testImplementation("org.assertj:assertj-core:3.21.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
     testImplementation(platform("org.junit:junit-bom:5.8.0"))
     // https://mvnrepository.com/artifact/com.squareup/javapoet
     implementation("com.squareup:javapoet:1.13.0")
-    testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.21")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
 }
 
 
